@@ -557,6 +557,7 @@
     <!-- SUBMIT -->
     <div class="submit-section">
       <button type="submit" class="submit-btn">ENVOYER MON AVIS →</button>
+      <div id="submitError" style="display:none; margin-top:12px; padding:12px 16px; background:rgba(255,107,107,0.15); border:1px solid var(--error); border-radius:8px; color:var(--error); font-size:13px;"></div>
       <p class="legal-note">Tes réponses sont anonymes. L'email est uniquement utilisé pour t'envoyer ta séance de coaching privé offerte (valeur 70 €). Aucune donnée n'est partagée avec des tiers.</p>
     </div>
 
@@ -581,6 +582,12 @@
 <script>
   const totalQuestions = 7;
 
+  // ====================================================================
+  // GOOGLE SHEETS - Colle ici l'URL de ton Google Apps Script déployé
+  // Voir le fichier GUIDE_CONFIGURATION.md pour les instructions
+  // ====================================================================
+  const GOOGLE_SCRIPT_URL = 'COLLER_VOTRE_URL_ICI';
+
   function toggleAutreQ2() {
     const cb = document.getElementById('q2g');
     const input = document.getElementById('q2autre');
@@ -590,19 +597,12 @@
 
   function updateProgress() {
     let answered = 0;
-    // Q1 - radio
     if (document.querySelector('input[name="q1"]:checked')) answered++;
-    // Q2 - checkbox
     if (document.querySelectorAll('input[name="q2"]:checked').length > 0) answered++;
-    // Q3 - radio
     if (document.querySelector('input[name="q3"]:checked')) answered++;
-    // Q4 - radio
     if (document.querySelector('input[name="q4"]:checked')) answered++;
-    // Q5 - checkbox
     if (document.querySelectorAll('input[name="q5"]:checked').length > 0) answered++;
-    // Q6 - textarea
     if (document.querySelector('textarea[name="q6"]').value.trim().length > 0) answered++;
-    // Q7 - email
     if (document.querySelector('input[name="email"]').value.trim().length > 0) answered++;
 
     const pct = Math.round((answered / totalQuestions) * 100);
@@ -611,48 +611,79 @@
     document.getElementById('progressPct').textContent = pct + '%';
   }
 
-  function handleSubmit(e) {
+  function setSubmitLoading(loading) {
+    const btn = document.querySelector('.submit-btn');
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = 'ENVOI EN COURS...';
+      btn.style.opacity = '0.7';
+      btn.style.cursor = 'wait';
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText || 'ENVOYER MON AVIS →';
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    }
+  }
+
+  function showSuccess() {
+    document.getElementById('formWrapper').style.display = 'none';
+    document.querySelector('.progress-container').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showError(message) {
+    setSubmitLoading(false);
+    const errorDiv = document.getElementById('submitError');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // Collect data
     const formData = new FormData(e.target);
     const data = {};
 
-    // Q1
     data.frequence = formData.get('q1') || 'Non répondu';
 
-    // Q2 - multiple checkboxes
     data.freins = formData.getAll('q2');
     const autreText = formData.get('q2_autre');
     if (autreText) data.freins = data.freins.map(f => f === 'Autre' ? 'Autre: ' + autreText : f);
     if (data.freins.length === 0) data.freins = ['Non répondu'];
 
-    // Q3
     data.coaching = formData.get('q3') || 'Non répondu';
-
-    // Q4
     data.creneaux = formData.get('q4') || 'Non répondu';
 
-    // Q5 - multiple checkboxes
     data.retour = formData.getAll('q5');
     if (data.retour.length === 0) data.retour = ['Non répondu'];
 
-    // Q6
     data.commentaire = formData.get('q6') || '';
-
-    // Q7
     data.email = formData.get('email') || '';
 
-    // Log to console (replace with your backend/API)
-    console.log('📋 Réponse enquête NATIF BODY:', JSON.stringify(data, null, 2));
-
-    // Show success
-    document.getElementById('formWrapper').style.display = 'none';
-    document.querySelector('.progress-container').style.display = 'none';
-    document.getElementById('successScreen').classList.add('active');
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Envoi vers Google Sheets
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'COLLER_VOTRE_URL_ICI') {
+      setSubmitLoading(true);
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        showSuccess();
+      } catch (error) {
+        console.error('Erreur envoi Google Sheets:', error);
+        showError('Erreur lors de l\'envoi. Vérifie ta connexion et réessaie.');
+      }
+    } else {
+      console.warn('⚠️ Google Sheets non configuré. Configure GOOGLE_SCRIPT_URL dans le code.');
+      console.log('📋 Réponse enquête NATIF BODY:', JSON.stringify(data, null, 2));
+      showSuccess();
+    }
   }
 </script>
 
