@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NATIF BODY — Ton avis compte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --card: #141414;
+    --card-hover: #1e1e1e;
+    --accent: #C8102E;
+    --accent-dim: rgba(200, 16, 46, 0.15);
+    --accent-glow: rgba(200, 16, 46, 0.35);
+    --text: #f0f0f0;
+    --text-muted: #888888;
+    --text-dim: #555555;
+    --border: #2a2a2a;
+    --error: #ff6b6b;
+    --success: #47ffa0;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 60px 24px 48px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1a1a1a 0%, var(--bg) 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(232, 255, 71, 0.2);
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+  }
+  .hero-incentive {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .hero-incentive .gift { font-size: 18px; }
+  .hero-incentive strong { color: var(--accent); }
+  .hero-timer {
+    display: block;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* PROGRESS */
+  .progress-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 15, 15, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* FORM */
+  .form-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+
+  .question-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s ease;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .question-block:nth-child(1) { animation-delay: 0.05s; }
+  .question-block:nth-child(2) { animation-delay: 0.1s; }
+  .question-block:nth-child(3) { animation-delay: 0.15s; }
+  .question-block:nth-child(4) { animation-delay: 0.2s; }
+  .question-block:nth-child(5) { animation-delay: 0.25s; }
+  .question-block:nth-child(6) { animation-delay: 0.3s; }
+  .question-block:nth-child(7) { animation-delay: 0.35s; }
+  .question-block:nth-child(8) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .question-block:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+  }
+
+  .q-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .q-label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  /* RADIO / CHECKBOX OPTIONS */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .option-item {
+    position: relative;
+  }
+  .option-item input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .option-item label {
+    display: block;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .option-item label:hover {
+    background: var(--card-hover);
+    border-color: #3a3a3a;
+  }
+  .option-item input:checked + label {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* TEXTAREA */
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  textarea::placeholder { color: var(--text-dim); }
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+  }
+
+  /* EMAIL INPUT */
+  .email-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-input::placeholder { color: var(--text-dim); }
+  .email-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+  }
+
+  /* SUBMIT */
+  .submit-section {
+    text-align: center;
+    padding-top: 8px;
+  }
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #ffffff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(200, 16, 46, 0.35);
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(200, 16, 46, 0.5);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  .legal-note {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* SUCCESS STATE */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .success-screen.active { display: block; }
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 36px;
+    animation: popIn 0.5s ease;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .success-screen h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .success-screen h2 span { color: var(--accent); }
+  .success-screen p {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .footer strong { color: var(--text-muted); }
+
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .hero { padding: 48px 20px 36px; }
+    .question-block { padding: 22px 18px; }
+    .submit-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ Enquête flash — 2 min chrono</div>
+  <h1>TON AVIS FAIT <span>LA FORCE</span> DU CLUB</h1>
+  <p>On veut faire évoluer NATIF BODY avec toi. Dis-nous ce qui te plaît, ce qui te freine, et ce qui te ferait revenir à fond. Chaque réponse compte.</p>
+  <div class="hero-incentive">
+    <span class="gift">🎁</span>
+    <span>Réponds et reçois <strong>1 séance de coaching privé offerte (valeur 70 €)</strong></span>
+  </div>
+  <span class="hero-timer">⏱ Temps estimé : moins de 2 minutes</span>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-container">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label">
+    <span id="progressText">Question 1 / 7</span>
+    <span id="progressPct">0%</span>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrapper" id="formWrapper">
+  <form id="surveyForm" onsubmit="handleSubmit(event)">
+
+    <!-- Q1 — Fréquence -->
+    <div class="question-block" data-q="1">
+      <div class="q-number">QUESTION 01</div>
+      <div class="q-label">En ce moment, à quelle fréquence viens-tu à la salle ?</div>
+      <div class="q-hint">Sois honnête, on ne juge pas 😉</div>
+      <div class="options-grid">
+        <div class="option-item">
+          <input type="radio" name="q1" id="q1a" value="3+ fois/semaine" onchange="updateProgress()">
+          <label for="q1a">💪 3 fois ou plus par semaine</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q1" id="q1b" value="1-2 fois/semaine" onchange="updateProgress()">
+          <label for="q1b">👍 1 à 2 fois par semaine</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q1" id="q1c" value="Quelques fois/mois" onchange="updateProgress()">
+          <label for="q1c">🤏 Quelques fois par mois</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q1" id="q1d" value="Très rarement ou plus du tout" onchange="updateProgress()">
+          <label for="q1d">😶 Très rarement ou plus du tout</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 — Freins -->
+    <div class="question-block" data-q="2">
+      <div class="q-number">QUESTION 02</div>
+      <div class="q-label">Qu'est-ce qui te freine en ce moment ?</div>
+      <div class="q-hint">Plusieurs réponses possibles</div>
+      <div class="options-grid">
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2a" value="Horaires pas adaptés" onchange="updateProgress()">
+          <label for="q2a">🕐 Les horaires ne me conviennent pas</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2b" value="Manque de motivation" onchange="updateProgress()">
+          <label for="q2b">😴 Baisse de motivation</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2c" value="Vie pro/perso chargée" onchange="updateProgress()">
+          <label for="q2c">🏃 Vie pro ou perso trop chargée</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2d" value="Blessure ou fatigue" onchange="updateProgress()">
+          <label for="q2d">🤕 Blessure ou fatigue physique</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2e" value="Ambiance ou dynamique de groupe" onchange="updateProgress()">
+          <label for="q2e">🫤 L'ambiance ou la dynamique du groupe</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2f" value="Budget" onchange="updateProgress()">
+          <label for="q2f">💰 Le budget</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q2" id="q2g" value="Autre" onchange="toggleAutreQ2(); updateProgress()">
+          <label for="q2g">✏️ Autre</label>
+        </div>
+        <input type="text" class="email-input" id="q2autre" name="q2_autre" placeholder="Précise ici..." style="display:none; margin-top:8px;" oninput="updateProgress()">
+      </div>
+    </div>
+
+    <!-- Q3 — Coaching -->
+    <div class="question-block" data-q="3">
+      <div class="q-number">QUESTION 03</div>
+      <div class="q-label">Que penses-tu du coaching actuellement ?</div>
+      <div class="q-hint">Une seule réponse</div>
+      <div class="options-grid">
+        <div class="option-item">
+          <input type="radio" name="q3" id="q3a" value="Top, rien à changer" onchange="updateProgress()">
+          <label for="q3a">🔥 Top, rien à changer</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q3" id="q3b" value="Bien mais répétitif" onchange="updateProgress()">
+          <label for="q3b">🔄 Bien, mais ça devient répétitif</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q3" id="q3c" value="Pas assez intense" onchange="updateProgress()">
+          <label for="q3c">⚡ J'aimerais plus d'intensité</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q3" id="q3d" value="Pas assez personnalisé" onchange="updateProgress()">
+          <label for="q3d">🎯 Pas assez personnalisé à mes objectifs</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q3" id="q3e" value="Je n'utilise pas le coaching" onchange="updateProgress()">
+          <label for="q3e">🤷 Je n'utilise pas vraiment le coaching</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 — Créneaux -->
+    <div class="question-block" data-q="4">
+      <div class="q-number">QUESTION 04</div>
+      <div class="q-label">Les créneaux proposés te conviennent ?</div>
+      <div class="q-hint">On veut s'adapter au mieux à ton rythme</div>
+      <div class="options-grid">
+        <div class="option-item">
+          <input type="radio" name="q4" id="q4a" value="Oui, parfait" onchange="updateProgress()">
+          <label for="q4a">✅ Oui, les horaires me vont bien</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q4" id="q4b" value="J'aimerais plus de créneaux tôt le matin" onchange="updateProgress()">
+          <label for="q4b">🌅 J'aimerais plus de créneaux tôt le matin</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q4" id="q4c" value="J'aimerais plus de créneaux le midi" onchange="updateProgress()">
+          <label for="q4c">☀️ J'aimerais plus de créneaux le midi</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q4" id="q4d" value="J'aimerais plus de créneaux en soirée" onchange="updateProgress()">
+          <label for="q4d">🌙 J'aimerais plus de créneaux en soirée</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="q4" id="q4e" value="J'aimerais des créneaux le week-end" onchange="updateProgress()">
+          <label for="q4e">📅 J'aimerais des créneaux le week-end</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 — Ce qui ferait revenir -->
+    <div class="question-block" data-q="5">
+      <div class="q-number">QUESTION 05</div>
+      <div class="q-label">Qu'est-ce qui te donnerait envie de revenir à fond ?</div>
+      <div class="q-hint">Plusieurs réponses possibles — on prend tout !</div>
+      <div class="options-grid">
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5a" value="Nouveaux concepts de cours" onchange="updateProgress()">
+          <label for="q5a">🆕 De nouveaux concepts de cours</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5b" value="Des défis collectifs / challenges" onchange="updateProgress()">
+          <label for="q5b">🏆 Des défis collectifs ou challenges</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5c" value="De nouveaux équipements" onchange="updateProgress()">
+          <label for="q5c">🏋️ De nouveaux équipements</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5d" value="Plus de suivi individuel" onchange="updateProgress()">
+          <label for="q5d">📊 Plus de suivi individuel de ma progression</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5e" value="Des événements communautaires" onchange="updateProgress()">
+          <label for="q5e">🎉 Des événements communautaires (sorties, soirées...)</label>
+        </div>
+        <div class="option-item">
+          <input type="checkbox" name="q5" id="q5f" value="Un accompagnement nutrition" onchange="updateProgress()">
+          <label for="q5f">🥗 Un accompagnement nutrition</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 — Champ libre -->
+    <div class="question-block" data-q="6">
+      <div class="q-number">QUESTION 06</div>
+      <div class="q-label">Un truc à nous dire ? Une idée, un ressenti, un coup de gueule ?</div>
+      <div class="q-hint">Optionnel — mais c'est là qu'on apprend le plus</div>
+      <textarea name="q6" placeholder="Écris librement ici..." oninput="updateProgress()"></textarea>
+    </div>
+
+    <!-- Q7 — Email pour recevoir le coaching offert -->
+    <div class="question-block" data-q="7">
+      <div class="q-number">QUESTION 07</div>
+      <div class="q-label">Ton email pour recevoir ta séance coaching offerte 🎁</div>
+      <div class="q-hint">On t'enverra les infos pour réserver ta séance privée gratuite</div>
+      <input type="email" class="email-input" name="email" placeholder="ton@email.com" oninput="updateProgress()">
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-section">
+      <button type="submit" class="submit-btn">ENVOYER MON AVIS →</button>
+      <p class="legal-note">Tes réponses sont anonymes. L'email est uniquement utilisé pour t'envoyer ta séance de coaching privé offerte (valeur 70 €). Aucune donnée n'est partagée avec des tiers.</p>
+    </div>
+
+  </form>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">💚</div>
+  <h2>MERCI <span>POUR TON RETOUR !</span></h2>
+  <p>Ton avis va nous aider à faire évoluer le club dans le bon sens.</p>
+  <p>Si tu as laissé ton email, tu recevras très vite les infos pour réserver ta séance de coaching privé offerte d'une valeur de 70 €.</p>
+  <p style="margin-top: 24px; color: var(--accent); font-weight: 600;">À très vite chez NATIF BODY 💪</p>
+</div>
+
+<!-- FOOTER -->
+<div class="footer" id="footer">
+  <strong>NATIF BODY</strong> — Saint-Genis-Laval<br>
+  Coaching · Fitness · Bien-être
+</div>
+
+<script>
+  const totalQuestions = 7;
+
+  function toggleAutreQ2() {
+    const cb = document.getElementById('q2g');
+    const input = document.getElementById('q2autre');
+    input.style.display = cb.checked ? 'block' : 'none';
+    if (!cb.checked) input.value = '';
+  }
+
+  function updateProgress() {
+    let answered = 0;
+    // Q1 - radio
+    if (document.querySelector('input[name="q1"]:checked')) answered++;
+    // Q2 - checkbox
+    if (document.querySelectorAll('input[name="q2"]:checked').length > 0) answered++;
+    // Q3 - radio
+    if (document.querySelector('input[name="q3"]:checked')) answered++;
+    // Q4 - radio
+    if (document.querySelector('input[name="q4"]:checked')) answered++;
+    // Q5 - checkbox
+    if (document.querySelectorAll('input[name="q5"]:checked').length > 0) answered++;
+    // Q6 - textarea
+    if (document.querySelector('textarea[name="q6"]').value.trim().length > 0) answered++;
+    // Q7 - email
+    if (document.querySelector('input[name="email"]').value.trim().length > 0) answered++;
+
+    const pct = Math.round((answered / totalQuestions) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${answered} / ${totalQuestions} répondu${answered > 1 ? 'es' : 'e'}`;
+    document.getElementById('progressPct').textContent = pct + '%';
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    // Collect data
+    const formData = new FormData(e.target);
+    const data = {};
+
+    // Q1
+    data.frequence = formData.get('q1') || 'Non répondu';
+
+    // Q2 - multiple checkboxes
+    data.freins = formData.getAll('q2');
+    const autreText = formData.get('q2_autre');
+    if (autreText) data.freins = data.freins.map(f => f === 'Autre' ? 'Autre: ' + autreText : f);
+    if (data.freins.length === 0) data.freins = ['Non répondu'];
+
+    // Q3
+    data.coaching = formData.get('q3') || 'Non répondu';
+
+    // Q4
+    data.creneaux = formData.get('q4') || 'Non répondu';
+
+    // Q5 - multiple checkboxes
+    data.retour = formData.getAll('q5');
+    if (data.retour.length === 0) data.retour = ['Non répondu'];
+
+    // Q6
+    data.commentaire = formData.get('q6') || '';
+
+    // Q7
+    data.email = formData.get('email') || '';
+
+    // Log to console (replace with your backend/API)
+    console.log('📋 Réponse enquête NATIF BODY:', JSON.stringify(data, null, 2));
+
+    // Show success
+    document.getElementById('formWrapper').style.display = 'none';
+    document.querySelector('.progress-container').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
