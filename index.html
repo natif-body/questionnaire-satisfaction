@@ -407,6 +407,7 @@
           <label for="q1d">😶 Très rarement ou plus du tout</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q1_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q2 — Freins -->
@@ -445,6 +446,7 @@
         </div>
         <input type="text" class="email-input" id="q2autre" name="q2_autre" placeholder="Précise ici..." style="display:none; margin-top:8px;" oninput="updateProgress()">
       </div>
+      <input type="text" class="email-input" name="q2_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q3 — Coaching -->
@@ -474,6 +476,7 @@
           <label for="q3e">🤷 Je n'utilise pas vraiment le coaching</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q3_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q4 — Créneaux -->
@@ -503,6 +506,7 @@
           <label for="q4e">📅 J'aimerais des créneaux le week-end</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q4_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q5 — Ce qui ferait revenir -->
@@ -536,6 +540,7 @@
           <label for="q5f">🥗 Un accompagnement nutrition</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q5_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q6 — Champ libre -->
@@ -655,11 +660,18 @@
     if (autreText) data.freins = data.freins.map(f => f === 'Autre' ? 'Autre: ' + autreText : f);
     if (data.freins.length === 0) data.freins = ['Non répondu'];
 
+    data.frequence_commentaire = formData.get('q1_commentaire') || '';
+    data.freins_commentaire = formData.get('q2_commentaire') || '';
+
     data.coaching = formData.get('q3') || 'Non répondu';
+    data.coaching_commentaire = formData.get('q3_commentaire') || '';
+
     data.creneaux = formData.get('q4') || 'Non répondu';
+    data.creneaux_commentaire = formData.get('q4_commentaire') || '';
 
     data.retour = formData.getAll('q5');
     if (data.retour.length === 0) data.retour = ['Non répondu'];
+    data.retour_commentaire = formData.get('q5_commentaire') || '';
 
     data.commentaire = formData.get('q6') || '';
     data.email = formData.get('email') || '';

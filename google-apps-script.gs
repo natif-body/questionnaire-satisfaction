@@ -26,16 +26,21 @@ function doPost(e) {
       sheet.appendRow([
         'Horodatage',
         'Fréquence de visite',
+        'Commentaire fréquence',
         'Freins',
+        'Commentaire freins',
         'Avis coaching',
+        'Commentaire coaching',
         'Créneaux souhaités',
+        'Commentaire créneaux',
         'Ce qui ferait revenir',
+        'Commentaire retour',
         'Commentaire libre',
         'Email'
       ]);
 
       // Mettre les en-têtes en gras
-      var headerRange = sheet.getRange(1, 1, 1, 8);
+      var headerRange = sheet.getRange(1, 1, 1, 13);
       headerRange.setFontWeight('bold');
       headerRange.setBackground('#C8102E');
       headerRange.setFontColor('#FFFFFF');
@@ -48,16 +53,21 @@ function doPost(e) {
     sheet.appendRow([
       new Date(),
       data.frequence || 'Non répondu',
+      data.frequence_commentaire || '',
       (data.freins || []).join(', '),
+      data.freins_commentaire || '',
       data.coaching || 'Non répondu',
+      data.coaching_commentaire || '',
       data.creneaux || 'Non répondu',
+      data.creneaux_commentaire || '',
       (data.retour || []).join(', '),
+      data.retour_commentaire || '',
       data.commentaire || '',
       data.email || ''
     ]);
 
     // Ajuster la largeur des colonnes
-    sheet.autoResizeColumns(1, 8);
+    sheet.autoResizeColumns(1, 13);
 
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'success' }))
@@ -76,10 +86,15 @@ function testDoPost() {
     postData: {
       contents: JSON.stringify({
         frequence: '3+ fois/semaine',
+        frequence_commentaire: 'Je viens surtout le matin',
         freins: ['Manque de motivation', 'Vie pro/perso chargée'],
+        freins_commentaire: 'Surtout en hiver',
         coaching: 'Top, rien à changer',
+        coaching_commentaire: '',
         creneaux: 'Oui, parfait',
+        creneaux_commentaire: 'Le créneau de 7h est top',
         retour: ['Nouveaux concepts de cours', 'Des défis collectifs / challenges'],
+        retour_commentaire: 'Un challenge mensuel serait génial',
         commentaire: 'Super salle, continuez comme ça !',
         email: 'test@exemple.com'
       })
