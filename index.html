@@ -361,12 +361,13 @@
 
 <!-- HERO -->
 <div class="hero">
+  <img src="logo-natif-body.png" alt="NATIF BODY" style="width: 160px; margin-bottom: 24px; border-radius: 12px; background: #ffffff; padding: 10px;">
   <div class="hero-badge">⚡ Enquête flash — 2 min chrono</div>
   <h1>TON AVIS FAIT <span>LA FORCE</span> DU CLUB</h1>
   <p>On veut faire évoluer NATIF BODY avec toi. Dis-nous ce qui te plaît, ce qui te freine, et ce qui te ferait revenir à fond. Chaque réponse compte.</p>
   <div class="hero-incentive">
     <span class="gift">🎁</span>
-    <span>Réponds et reçois <strong>1 séance de coaching privé offerte (valeur 70 €)</strong></span>
+    <span>Réponds et tente de gagner <strong>1 des 5 t-shirts NATIF BODY</strong> par tirage au sort !</span>
   </div>
   <span class="hero-timer">⏱ Temps estimé : moins de 2 minutes</span>
 </div>
@@ -407,6 +408,7 @@
           <label for="q1d">😶 Très rarement ou plus du tout</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q1_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q2 — Freins -->
@@ -445,6 +447,7 @@
         </div>
         <input type="text" class="email-input" id="q2autre" name="q2_autre" placeholder="Précise ici..." style="display:none; margin-top:8px;" oninput="updateProgress()">
       </div>
+      <input type="text" class="email-input" name="q2_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q3 — Coaching -->
@@ -474,6 +477,7 @@
           <label for="q3e">🤷 Je n'utilise pas vraiment le coaching</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q3_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q4 — Créneaux -->
@@ -503,6 +507,7 @@
           <label for="q4e">📅 J'aimerais des créneaux le week-end</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q4_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q5 — Ce qui ferait revenir -->
@@ -536,6 +541,7 @@
           <label for="q5f">🥗 Un accompagnement nutrition</label>
         </div>
       </div>
+      <input type="text" class="email-input" name="q5_commentaire" placeholder="💬 Précise si tu veux..." style="margin-top:12px;">
     </div>
 
     <!-- Q6 — Champ libre -->
@@ -546,18 +552,19 @@
       <textarea name="q6" placeholder="Écris librement ici..." oninput="updateProgress()"></textarea>
     </div>
 
-    <!-- Q7 — Email pour recevoir le coaching offert -->
+    <!-- Q7 — Email pour le tirage au sort -->
     <div class="question-block" data-q="7">
       <div class="q-number">QUESTION 07</div>
-      <div class="q-label">Ton email pour recevoir ta séance coaching offerte 🎁</div>
-      <div class="q-hint">On t'enverra les infos pour réserver ta séance privée gratuite</div>
+      <div class="q-label">Ton email pour participer au tirage au sort 🎁</div>
+      <div class="q-hint">5 t-shirts NATIF BODY à gagner — on te contactera si tu es tiré(e) au sort !</div>
       <input type="email" class="email-input" name="email" placeholder="ton@email.com" oninput="updateProgress()">
     </div>
 
     <!-- SUBMIT -->
     <div class="submit-section">
       <button type="submit" class="submit-btn">ENVOYER MON AVIS →</button>
-      <p class="legal-note">Tes réponses sont anonymes. L'email est uniquement utilisé pour t'envoyer ta séance de coaching privé offerte (valeur 70 €). Aucune donnée n'est partagée avec des tiers.</p>
+      <div id="submitError" style="display:none; margin-top:12px; padding:12px 16px; background:rgba(255,107,107,0.15); border:1px solid var(--error); border-radius:8px; color:var(--error); font-size:13px;"></div>
+      <p class="legal-note">Tes réponses sont anonymes. L'email est uniquement utilisé pour te contacter en cas de gain au tirage au sort (5 t-shirts NATIF BODY à gagner). Aucune donnée n'est partagée avec des tiers.</p>
     </div>
 
   </form>
@@ -568,7 +575,7 @@
   <div class="success-icon">💚</div>
   <h2>MERCI <span>POUR TON RETOUR !</span></h2>
   <p>Ton avis va nous aider à faire évoluer le club dans le bon sens.</p>
-  <p>Si tu as laissé ton email, tu recevras très vite les infos pour réserver ta séance de coaching privé offerte d'une valeur de 70 €.</p>
+  <p>Si tu as laissé ton email, tu participes automatiquement au tirage au sort pour gagner 1 des 5 t-shirts NATIF BODY ! On te contactera si tu es parmi les gagnants.</p>
   <p style="margin-top: 24px; color: var(--accent); font-weight: 600;">À très vite chez NATIF BODY 💪</p>
 </div>
 
@@ -581,6 +588,12 @@
 <script>
   const totalQuestions = 7;
 
+  // ====================================================================
+  // GOOGLE SHEETS - Colle ici l'URL de ton Google Apps Script déployé
+  // Voir le fichier GUIDE_CONFIGURATION.md pour les instructions
+  // ====================================================================
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDfFjRH0zQp43lMZTiX_DyTKzhpHu7ZFEgbKBdFehtYh0BSWEQsRy47sk2BIJCooye/exec';
+
   function toggleAutreQ2() {
     const cb = document.getElementById('q2g');
     const input = document.getElementById('q2autre');
@@ -590,19 +603,12 @@
 
   function updateProgress() {
     let answered = 0;
-    // Q1 - radio
     if (document.querySelector('input[name="q1"]:checked')) answered++;
-    // Q2 - checkbox
     if (document.querySelectorAll('input[name="q2"]:checked').length > 0) answered++;
-    // Q3 - radio
     if (document.querySelector('input[name="q3"]:checked')) answered++;
-    // Q4 - radio
     if (document.querySelector('input[name="q4"]:checked')) answered++;
-    // Q5 - checkbox
     if (document.querySelectorAll('input[name="q5"]:checked').length > 0) answered++;
-    // Q6 - textarea
     if (document.querySelector('textarea[name="q6"]').value.trim().length > 0) answered++;
-    // Q7 - email
     if (document.querySelector('input[name="email"]').value.trim().length > 0) answered++;
 
     const pct = Math.round((answered / totalQuestions) * 100);
@@ -611,48 +617,86 @@
     document.getElementById('progressPct').textContent = pct + '%';
   }
 
-  function handleSubmit(e) {
+  function setSubmitLoading(loading) {
+    const btn = document.querySelector('.submit-btn');
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.textContent = 'ENVOI EN COURS...';
+      btn.style.opacity = '0.7';
+      btn.style.cursor = 'wait';
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText || 'ENVOYER MON AVIS →';
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    }
+  }
+
+  function showSuccess() {
+    document.getElementById('formWrapper').style.display = 'none';
+    document.querySelector('.progress-container').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showError(message) {
+    setSubmitLoading(false);
+    const errorDiv = document.getElementById('submitError');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // Collect data
     const formData = new FormData(e.target);
     const data = {};
 
-    // Q1
     data.frequence = formData.get('q1') || 'Non répondu';
 
-    // Q2 - multiple checkboxes
     data.freins = formData.getAll('q2');
     const autreText = formData.get('q2_autre');
     if (autreText) data.freins = data.freins.map(f => f === 'Autre' ? 'Autre: ' + autreText : f);
     if (data.freins.length === 0) data.freins = ['Non répondu'];
 
-    // Q3
+    data.frequence_commentaire = formData.get('q1_commentaire') || '';
+    data.freins_commentaire = formData.get('q2_commentaire') || '';
+
     data.coaching = formData.get('q3') || 'Non répondu';
+    data.coaching_commentaire = formData.get('q3_commentaire') || '';
 
-    // Q4
     data.creneaux = formData.get('q4') || 'Non répondu';
+    data.creneaux_commentaire = formData.get('q4_commentaire') || '';
 
-    // Q5 - multiple checkboxes
     data.retour = formData.getAll('q5');
     if (data.retour.length === 0) data.retour = ['Non répondu'];
+    data.retour_commentaire = formData.get('q5_commentaire') || '';
 
-    // Q6
     data.commentaire = formData.get('q6') || '';
-
-    // Q7
     data.email = formData.get('email') || '';
 
-    // Log to console (replace with your backend/API)
-    console.log('📋 Réponse enquête NATIF BODY:', JSON.stringify(data, null, 2));
-
-    // Show success
-    document.getElementById('formWrapper').style.display = 'none';
-    document.querySelector('.progress-container').style.display = 'none';
-    document.getElementById('successScreen').classList.add('active');
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Envoi vers Google Sheets
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'COLLER_VOTRE_URL_ICI') {
+      setSubmitLoading(true);
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        showSuccess();
+      } catch (error) {
+        console.error('Erreur envoi Google Sheets:', error);
+        showError('Erreur lors de l\'envoi. Vérifie ta connexion et réessaie.');
+      }
+    } else {
+      console.warn('⚠️ Google Sheets non configuré. Configure GOOGLE_SCRIPT_URL dans le code.');
+      console.log('📋 Réponse enquête NATIF BODY:', JSON.stringify(data, null, 2));
+      showSuccess();
+    }
   }
 </script>
 
